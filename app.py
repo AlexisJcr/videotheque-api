@@ -22,6 +22,26 @@ def ecrire_donnees(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+# =======================
+# === Système de logs ===
+# =======================
+def enregistrer_log(categorie, action, details, auteur="Système"):
+    """Enregistre un événement horodaté dans la base JSON (doit être appelée sous file_lock)."""
+    data = lire_donnees()
+    logs = data.setdefault("logs", [])
+    nouvel_id = 1 if not logs else max(l.get("id", 0) for l in logs) + 1
+    
+    entree_log = {
+        "id": nouvel_id,
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "categorie": categorie,   # FILM, SUPPORT, EMPRUNT, AUTH
+        "action": action,         # AJOUT, MODIFICATION, SUPPRESSION, EMPRUNT, RETOUR, LOGIN, LOGOUT
+        "details": details,
+        "auteur": auteur
+    }
+    logs.append(entree_log)
+    ecrire_donnees(data)
+
 @app.route('/api/films', methods=['GET'])
 def get_films():
     """Récupère tout le catalogue."""
@@ -63,6 +83,7 @@ def ajouter_film():
         films.append(nouveau_film)
         data["films"] = films
         ecrire_donnees(data)
+        enregistrer_log("FILM", "AJOUT", f"Création du film '{nouveau_film.get('titre')}' (ID: {nouvel_id})")
     # FIN DE LA SECTION ATOMIQUE (le locker se libère automatiquement)
     
     # 201 = Created (Code HTTP standard pour une création réussie)
@@ -99,6 +120,7 @@ def modifier_film(film_id):
         
         films[film_index] = film_existant
         ecrire_donnees(data)
+        enregistrer_log("FILM", "MODIFICATION", f"Mise à jour des métadonnées du film '{film_existant.get('titre')}' (ID: {film_id})")
         
     return jsonify({"message": "Film modifié avec succès", "film": film_existant}), 200
 
@@ -120,6 +142,7 @@ def supprimer_film(film_id):
         # On filtre la liste pour exclure le film à supprimer
         data["films"] = [f for f in films if f["id"] != film_id]
         ecrire_donnees(data)
+        enregistrer_log("FILM", "SUPPRESSION", f"Suppression du film '{film_a_supprimer.get('titre')}' (ID: {film_id})")
         
     return jsonify({"message": "Film supprimé avec succès"}), 200
 
@@ -151,6 +174,7 @@ def ajouter_support(film_id):
         film["supports"]["physiques"].append(nouveau_support)
         
         ecrire_donnees(data)
+        enregistrer_log("SUPPORT", "AJOUT", f"Ajout de l'exemplaire {nouveau_support.get('supportId')} ({nouveau_support.get('format')}) pour le film ID {film_id}")
         
     return jsonify({"message": "Exemplaire ajouté au stock"}), 201
 
@@ -186,6 +210,7 @@ def modifier_support_unitaire(film_id, support_id):
             support["supportId"] = nouveau_id
             
         ecrire_donnees(data)
+        enregistrer_log("SUPPORT", "MODIFICATION", f"Mise à jour du support {support_id} : État={support.get('etat')}, Format={support.get('format')}")
         
     return jsonify({"message": "Support modifié avec succès", "support": support}), 200
 
@@ -217,6 +242,7 @@ def supprimer_support_unitaire(film_id, support_id):
         # On recrée la liste en excluant le support à supprimer
         film["supports"]["physiques"] = [s for s in physiques if s["supportId"] != support_id]
         ecrire_donnees(data)
+        enregistrer_log("SUPPORT", "SUPPRESSION", f"Suppression du support {support_id} du film ID {film_id}")
         
     return jsonify({"message": "Support supprimé"}), 200
 
@@ -290,7 +316,7 @@ def emprunter_support():
         support_trouve["etat"] = "PRETE"
         
         ecrire_donnees(data)
-    # FIN DE LA SECTION ATOMIQUE
+        enregistrer_log("EMPRUNT", "EMPRUNT", f"Emprunt du support {support_id} par l'utilisateur {user.get('nom')} (ID: {user.get('id')}). Prévu le {nouveau_pret['date_retour_prevue']}", auteur=user.get('nom'))
         
     return jsonify({"message": "Emprunt validé", "date_retour_prevue": nouveau_pret["date_retour_prevue"]}), 201
 
@@ -334,8 +360,35 @@ def restituer_support():
         support_trouve["etat"] = "DISPONIBLE"
         
         ecrire_donnees(data)
+        enregistrer_log("EMPRUNT", "RETOUR", f"Restitution du support {support_id} (Prêt ID: {pret_en_cours.get('id_emprunt')})")
 
     return jsonify({"message": "Support restitué avec succès"}), 200
+
+
+# =======================
+# === Système de logs ===
+# =======================
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    """Récupère l'historique complet des logs, trié du plus récent au plus ancien."""
+    data = lire_donnees()
+    logs = data.get("logs", [])
+    # Tri décroissant par date/ID
+    logs_tries = sorted(logs, key=lambda x: x.get("id", 0), reverse=True)
+    return jsonify(logs_tries), 200
+
+@app.route('/api/logs', methods=['POST'])
+def creer_log_externe():
+    """Permet au tiers présentation de journaliser des événements (ex: auth)."""
+    payload = request.get_json() or {}
+    with file_lock:
+        enregistrer_log(
+            categorie=payload.get("categorie", "APPLICATION"),
+            action=payload.get("action", "ACTION"),
+            details=payload.get("details", ""),
+            auteur=payload.get("auteur", "Visiteur")
+        )
+    return jsonify({"message": "Log enregistré"}), 201
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

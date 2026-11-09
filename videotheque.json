@@ -46,13 +46,38 @@
                 },
                 "physiques": [
                     {
-                        "supportId": "WAS-BLU-01",
+                        "supportId": "WAS-BLU-02",
                         "format": "Blu-ray",
+                        "etat": "DISPONIBLE"
+                    },
+                    {
+                        "supportId": "WAS-DVD-01",
+                        "format": "DVD",
                         "etat": "DISPONIBLE"
                     }
                 ]
             },
             "id": 3
+        },
+        {
+            "titre": "The Avengers",
+            "realisateur": "Joss Whedon",
+            "annee": 2012,
+            "genre": "Science-Fiction",
+            "synopsis": "",
+            "supports": {
+                "numerique": {
+                    "disponible": true
+                },
+                "physiques": [
+                    {
+                        "supportId": "AVE-DVD-01",
+                        "format": "DVD",
+                        "etat": "DISPONIBLE"
+                    }
+                ]
+            },
+            "id": 4
         }
     ],
     "emprunts": [
@@ -79,6 +104,120 @@
             "date_debut": "2026-11-09",
             "date_retour_prevue": "2026-11-23",
             "statut": "TERMINE"
+        },
+        {
+            "id_emprunt": 5004,
+            "utilisateur_id": 101,
+            "supportId": "AVA-BLU-01",
+            "date_debut": "2026-11-09",
+            "date_retour_prevue": "2026-11-23",
+            "statut": "TERMINE"
+        },
+        {
+            "id_emprunt": 5005,
+            "utilisateur_id": 101,
+            "supportId": "WAS-BLU-01",
+            "date_debut": "2026-11-09",
+            "date_retour_prevue": "2026-11-23",
+            "statut": "TERMINE"
+        }
+    ],
+    "logs": [
+        {
+            "id": 1,
+            "date": "2026-11-09 09:54:00",
+            "categorie": "AUTH",
+            "action": "DECONNEXION",
+            "details": "Déconnexion du membre 'Alexis'",
+            "auteur": "Alexis"
+        },
+        {
+            "id": 2,
+            "date": "2026-11-09 09:54:03",
+            "categorie": "AUTH",
+            "action": "CONNEXION",
+            "details": "Connexion réussie de 'Alexis' avec le jeton abc123token",
+            "auteur": "Alexis"
+        },
+        {
+            "id": 3,
+            "date": "2026-11-09 09:54:17",
+            "categorie": "EMPRUNT",
+            "action": "EMPRUNT",
+            "details": "Emprunt du support AVA-BLU-01 par l'utilisateur Alexis (ID: 101). Prévu le 2026-11-23",
+            "auteur": "Alexis"
+        },
+        {
+            "id": 4,
+            "date": "2026-11-09 09:54:23",
+            "categorie": "EMPRUNT",
+            "action": "EMPRUNT",
+            "details": "Emprunt du support WAS-BLU-01 par l'utilisateur Alexis (ID: 101). Prévu le 2026-11-23",
+            "auteur": "Alexis"
+        },
+        {
+            "id": 5,
+            "date": "2026-11-09 09:54:29",
+            "categorie": "EMPRUNT",
+            "action": "RETOUR",
+            "details": "Restitution du support AVA-BLU-01 (Prêt ID: 5004)",
+            "auteur": "Système"
+        },
+        {
+            "id": 6,
+            "date": "2026-11-09 09:54:33",
+            "categorie": "EMPRUNT",
+            "action": "RETOUR",
+            "details": "Restitution du support WAS-BLU-01 (Prêt ID: 5005)",
+            "auteur": "Système"
+        },
+        {
+            "id": 7,
+            "date": "2026-11-09 09:54:37",
+            "categorie": "SUPPORT",
+            "action": "MODIFICATION",
+            "details": "Mise à jour du support WAS-BLU-01 : État=DISPONIBLE, Format=Blu-ray",
+            "auteur": "Système"
+        },
+        {
+            "id": 8,
+            "date": "2026-11-09 09:54:46",
+            "categorie": "SUPPORT",
+            "action": "AJOUT",
+            "details": "Ajout de l'exemplaire WAS-DVD-01 (DVD) pour le film ID 3",
+            "auteur": "Système"
+        },
+        {
+            "id": 9,
+            "date": "2026-11-09 09:56:45",
+            "categorie": "FILM",
+            "action": "SUPPRESSION",
+            "details": "Suppression du film 'The Avengers' (ID: 4)",
+            "auteur": "Système"
+        },
+        {
+            "id": 10,
+            "date": "2026-11-09 09:57:50",
+            "categorie": "FILM",
+            "action": "SUPPRESSION",
+            "details": "Suppression du film 'The Avengers' (ID: 4)",
+            "auteur": "Système"
+        },
+        {
+            "id": 11,
+            "date": "2026-11-09 09:58:08",
+            "categorie": "FILM",
+            "action": "AJOUT",
+            "details": "Création du film 'The Avengers' (ID: 4)",
+            "auteur": "Système"
+        },
+        {
+            "id": 12,
+            "date": "2026-11-09 09:58:27",
+            "categorie": "SUPPORT",
+            "action": "AJOUT",
+            "details": "Ajout de l'exemplaire AVE-DVD-01 (DVD) pour le film ID 4",
+            "auteur": "Système"
         }
     ]
 }
