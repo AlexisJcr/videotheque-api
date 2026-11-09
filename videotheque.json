@@ -1,1 +1,84 @@
-[]
+{
+    "utilisateurs": [
+        {
+            "id": 101,
+            "nom": "Alexis",
+            "jeton": "abc123token",
+            "actif": true,
+            "quota_max": 3
+        }
+    ],
+    "films": [
+        {
+            "titre": "Avatar 1",
+            "realisateur": "James Cameron",
+            "annee": 2009,
+            "genre": "Science-Fiction",
+            "synopsis": "",
+            "supports": {
+                "numerique": {
+                    "disponible": true
+                },
+                "physiques": [
+                    {
+                        "supportId": "AVA-BLU-01",
+                        "format": "Blu-ray",
+                        "etat": "DISPONIBLE"
+                    },
+                    {
+                        "supportId": "AVA-BLU-02",
+                        "format": "Blu-ray",
+                        "etat": "DISPONIBLE"
+                    }
+                ]
+            },
+            "id": 2
+        },
+        {
+            "titre": "Wasabi",
+            "realisateur": "Gérard Krawczyk",
+            "annee": 2001,
+            "genre": "Comédie Policière",
+            "synopsis": "",
+            "supports": {
+                "numerique": {
+                    "disponible": true
+                },
+                "physiques": [
+                    {
+                        "supportId": "WAS-BLU-01",
+                        "format": "Blu-ray",
+                        "etat": "DISPONIBLE"
+                    }
+                ]
+            },
+            "id": 3
+        }
+    ],
+    "emprunts": [
+        {
+            "id_emprunt": 5001,
+            "utilisateur_id": 101,
+            "supportId": "INC-BLU-02",
+            "date_debut": "2026-11-06",
+            "date_retour_prevue": "2026-11-20",
+            "statut": "EN_COURS"
+        },
+        {
+            "id_emprunt": 5002,
+            "utilisateur_id": 101,
+            "supportId": "AVA-BLU-01",
+            "date_debut": "2026-11-09",
+            "date_retour_prevue": "2026-11-23",
+            "statut": "TERMINE"
+        },
+        {
+            "id_emprunt": 5003,
+            "utilisateur_id": 101,
+            "supportId": "AVA-BLU-02",
+            "date_debut": "2026-11-09",
+            "date_retour_prevue": "2026-11-23",
+            "statut": "TERMINE"
+        }
+    ]
+}
